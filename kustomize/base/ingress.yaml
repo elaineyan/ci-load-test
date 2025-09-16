@@ -2,6 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: http-echo-ingress
+  labels:
+    app: http-echo
+    environment: test
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:

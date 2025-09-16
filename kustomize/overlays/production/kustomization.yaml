@@ -20,7 +20,6 @@ patches:
       path: /spec/template/spec/containers/0/resources/limits/memory
       value: "256Mi"
 
-# Production-specific configurations
 images:
 - name: hashicorp/http-echo
   newTag: latest

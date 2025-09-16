@@ -6,7 +6,7 @@ resources:
 - deployment.yaml
 - service.yaml
 - ingress.yaml
-- hpa.yaml  # Added HPA configuration
+- hpa.yaml
 
 commonLabels:
   app: http-echo

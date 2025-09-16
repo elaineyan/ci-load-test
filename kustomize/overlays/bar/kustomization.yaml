@@ -10,10 +10,19 @@ patches:
   target:
     kind: Deployment
     name: http-echo
-- path: hpa-patch.yaml  # Added HPA patch
-  target:
-    kind: HorizontalPodAutoscaler
-    name: http-echo-hpa
+- target:
+    kind: Deployment
+    name: http-echo
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: bar-deployment
+    - op: replace
+      path: /spec/template/metadata/labels/app
+      value: bar
+    - op: replace
+      path: /spec/selector/matchLabels/app
+      value: bar
 - target:
     kind: Service
     name: http-echo-service
@@ -37,3 +46,10 @@ patches:
     - op: replace
       path: /spec/rules/0/http/paths/0/backend/service/name
       value: "bar-service"
+- target:
+    kind: HorizontalPodAutoscaler
+    name: http-echo-hpa
+  patch: |-
+    - op: replace
+      path: /spec/scaleTargetRef/name
+      value: bar-deployment

@@ -2,6 +2,9 @@ apiVersion: v1
 kind: Service
 metadata:
   name: http-echo-service
+  labels:
+    app: http-echo
+    environment: test
 spec:
   selector:
     app: http-echo
