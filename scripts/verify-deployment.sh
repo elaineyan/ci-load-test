@@ -16,6 +16,7 @@ kubectl get hpa -n ${NAMESPACE}
 
 # Verify Ingress status
 kubectl get ingress -n ${NAMESPACE}
+kubectl get svc -n ingress-nginx
 
 # Diagnose network
 echo "Running network diagnostics..."
