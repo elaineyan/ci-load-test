@@ -10,7 +10,7 @@ sudo mv ./kind /usr/local/bin/kind
 
 # Install jq for JSON parsing and bc for calculations
 sudo apt-get update
-sudo apt-get install -y jq bc
+sudo apt-get install -y jq bc net-tools
 
 # Create multi-node cluster configuration
 cat > kind-config.yaml <<EOF
@@ -27,13 +27,16 @@ nodes:
         node-labels: "ingress-ready=true"
   extraPortMappings:
   - containerPort: 80
-    hostPort: 80
+    hostPort: 8080
     protocol: TCP
   - containerPort: 443
-    hostPort: 443
+    hostPort: 8443
     protocol: TCP
   - containerPort: 9090
     hostPort: 9090
+    protocol: TCP
+  - containerPort: 3000
+    hostPort: 3000  # Grafana
     protocol: TCP
 - role: worker
 - role: worker
