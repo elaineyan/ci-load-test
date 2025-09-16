@@ -21,6 +21,8 @@ kubectl get svc -n ingress-nginx
 # Diagnose network
 echo "Running network diagnostics..."
 
+docker exec -it ci-cluster-control-plane bash -c 'ss -ltnp | grep -E ":80|:443"'
+
 # Check port 
 echo "Checking if port 80 is listening..."
 if netstat -tuln | grep -q :80; then
