@@ -90,10 +90,11 @@ kubectl apply -f "$OUT_FILE"
 kubectl patch deploy -n ingress-nginx ingress-nginx-controller \
   --type='json' \
   -p='[{"op": "add","path":"/spec/template/spec/hostNetwork","value":true}]'
-  
-kubectl patch deploy -n ingress-nginx ingress-nginx-controller \
-  --type='json' \ -p='[{"op":"add","path":"/spec/template/spec/nodeSelector","value":{"kubernetes.io/hostname":"ci-cluster-control-plane"}}]'
 
+kubectl patch deploy -n ingress-nginx ingress-nginx-controller \
+  --type='json' \ 
+  -p='[{"op":"add","path":"/spec/template/spec/nodeSelector","value":{"kubernetes.io/hostname":"ci-cluster-control-plane"}}]'
+  
 kubectl rollout restart deploy/ingress-nginx-controller -n ingress-nginx
 kubectl rollout status  deploy/ingress-nginx-controller -n ingress-nginx
 
