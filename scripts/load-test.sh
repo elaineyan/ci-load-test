@@ -208,7 +208,6 @@ $BAR_JSON
 
 EOF
 
-echo "herehere,..2222"
 # Output results for GitHub Actions
 echo "results<<EOF" >> $GITHUB_OUTPUT
 cat load-test-results.md >> $GITHUB_OUTPUT
