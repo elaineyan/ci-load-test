@@ -19,9 +19,9 @@ parse_hey_output() {
     local rps=$(echo "$output" | awk '/Requests\/sec:/ {print $2}')
     
     # Extract latency percentiles
-    local p90=$(echo "$output" | awk '/90%/ {print $3}')
-    local p95=$(echo "$output" | awk '/95%/ {print $3}')
-    local p99=$(echo "$output" | awk '/99%/ {print $3}')
+    local p90=$(echo "$output" | awk '/90%/ {print $2}')
+    local p95=$(echo "$output" | awk '/95%/ {print $2}')
+    local p99=$(echo "$output" | awk '/99%/ {print $2}')
     
     # Extract error rate
     local error_line=$(echo "$output" | grep -E "\[[0-9]+\] responses" | grep -v "200")
@@ -62,7 +62,7 @@ run_hey_test() {
     local service="$2"
     local results_file="/tmp/${service}-hey-results.txt"
     
-    #echo "Testing $service service..."
+    echo "Testing $service service..."
     hey -n 2000 -c 50 -host "${host}.localhost" http://localhost > "$results_file" 2>&1
     
     # Parse the results
@@ -80,8 +80,7 @@ get_hpa_status() {
 # Get Prometheus metrics function
 get_metric() {
     local query="$1"
-    curl -sG http://localhost:9090/api/v1/query \
-	 --data-urlencode "query=${query}" |
+    curl -s "http://localhost:9090/api/v1/query?query=$query" | \
     jq -r '.data.result[0].value[1] // "N/A"'
 }
 
@@ -89,8 +88,6 @@ get_metric() {
 echo "Recording pre-test metrics..."
 CPU_BEFORE=$(get_metric 'sum(rate(container_cpu_usage_seconds_total{namespace="echo-apps"}[5m]))')
 MEMORY_BEFORE=$(get_metric 'sum(container_memory_usage_bytes{namespace="echo-apps"})')
-echo "CPU_BEFORE=$CPU_BEFORE"
-echo "MEMORY_BEFORE=$MEMORY_BEFORE"
 
 # Record pre-test HPA status and replica counts
 echo "Recording pre-test HPA status..."
@@ -98,10 +95,6 @@ FOO_HPA_BEFORE=$(get_hpa_status ${NAMESPACE} foo-hpa)
 BAR_HPA_BEFORE=$(get_hpa_status ${NAMESPACE} bar-hpa)
 FOO_REPLICAS_BEFORE=$(kubectl get deployment foo-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
 BAR_REPLICAS_BEFORE=$(kubectl get deployment bar-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
-echo "FOO_HPA_BEFORE=$FOO_HPA_BEFORE"
-echo "BAR_HPA_BEFORE=$BAR_HPA_BEFORE"
-echo "FOO_REPLICAS_BEFORE=$FOO_REPLICAS_BEFORE"
-echo "BAR_REPLICAS_BEFORE=$BAR_REPLICAS_BEFORE"
 
 # Run load tests and capture parsed results
 FOO_JSON=$(run_hey_test "foo" "foo")
@@ -111,8 +104,6 @@ BAR_JSON=$(run_hey_test "bar" "bar")
 echo "Recording post-test metrics..."
 CPU_AFTER=$(get_metric 'sum(rate(container_cpu_usage_seconds_total{namespace="echo-apps"}[5m]))')
 MEMORY_AFTER=$(get_metric 'sum(container_memory_usage_bytes{namespace="echo-apps"})')
-echo "CPU_AFTER=$CPU_AFTER"
-echo "MEMORY_AFTER=$MEMORY_AFTER"
 
 # Record post-test HPA status and replica counts
 echo "Recording post-test HPA status..."
@@ -121,11 +112,6 @@ FOO_HPA_AFTER=$(get_hpa_status ${NAMESPACE} foo-hpa)
 BAR_HPA_AFTER=$(get_hpa_status ${NAMESPACE} bar-hpa)
 FOO_REPLICAS_AFTER=$(kubectl get deployment foo-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
 BAR_REPLICAS_AFTER=$(kubectl get deployment bar-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
-echo "FOO_HPA_AFTER=$FOO_HPA_AFTER"
-echo "BAR_HPA_AFTER=$BAR_HPA_AFTER"
-echo "FOO_REPLICAS_AFTER=$FOO_REPLICAS_AFTER"
-echo "BAR_REPLICAS_AFTER=$BAR_REPLICAS_AFTER"
-echo  "FOO_JSON=$FOO_JSON"
 
 # Extract values from JSON for table formatting
 FOO_SERVICE=$(echo "$FOO_JSON" | jq -r '.service')
@@ -208,7 +194,6 @@ $BAR_JSON
 
 EOF
 
-echo "herehere,..2222"
 # Output results for GitHub Actions
 echo "results<<EOF" >> $GITHUB_OUTPUT
 cat load-test-results.md >> $GITHUB_OUTPUT

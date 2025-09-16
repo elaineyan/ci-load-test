@@ -51,5 +51,8 @@ patches:
     name: http-echo-hpa
   patch: |-
     - op: replace
+      path: /metadata/name
+      value: bar-hpa
+    - op: replace
       path: /spec/scaleTargetRef/name
       value: bar-deployment
