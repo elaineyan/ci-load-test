@@ -60,7 +60,7 @@ kubectl apply -f components.yaml
 kubectl wait --namespace kube-system \
   --for=condition=ready pod \
   --selector=k8s-app=metrics-server \
-  --timeout=5m
+  --timeout=10m
 
 # Verify Metrics Server installation
 echo "Verifying Metrics Server installation..."
@@ -87,6 +87,15 @@ sed -e '/^kind: Service$/,/^---$/{
       }' "$RAW_FILE" > "$OUT_FILE"
 
 kubectl apply -f "$OUT_FILE"
+kubectl patch deploy -n ingress-nginx ingress-nginx-controller \
+  --type='json' \
+  -p='[{"op": "add","path":"/spec/template/spec/hostNetwork","value":true}]'
+  
+kubectl patch deploy -n ingress-nginx ingress-nginx-controller \
+  --type='json' \ -p='[{"op":"add","path":"/spec/template/spec/nodeSelector","value":{"kubernetes.io/hostname":"ci-cluster-control-plane"}}]'
+
+kubectl rollout restart deploy/ingress-nginx-controller -n ingress-nginx
+kubectl rollout status  deploy/ingress-nginx-controller -n ingress-nginx
 
 # Wait for Ingress controller to be ready
 kubectl wait --namespace ingress-nginx \
