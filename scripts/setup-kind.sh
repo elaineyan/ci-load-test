@@ -29,15 +29,19 @@ nodes:
   - containerPort: 80
     hostPort: 80
     protocol: TCP
+    listenAddress: "0.0.0.0"
   - containerPort: 443
     hostPort: 443
     protocol: TCP
+    listenAddress: "0.0.0.0"
   - containerPort: 9090
     hostPort: 9090
     protocol: TCP
+    listenAddress: "0.0.0.0"
   - containerPort: 3000
     hostPort: 3000  # Grafana
     protocol: TCP
+    listenAddress: "0.0.0.0"
 - role: worker
 - role: worker
 EOF
@@ -66,6 +70,7 @@ kubectl get apiservices v1beta1.metrics.k8s.io -o json | jq '.status.conditions'
 echo "Cluster created successfully"
 kubectl cluster-info
 kubectl get nodes -o wide
+kubectl patch svc -n ingress-nginx ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
 
 # Create namespaces
 kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
