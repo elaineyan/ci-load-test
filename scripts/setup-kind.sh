@@ -44,7 +44,10 @@ kind create cluster --config kind-config.yaml --wait 10m
 
 # Deploy Metrics Server for HPA
 echo "Deploying Metrics Server for HPA..."
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+wget -O components.yaml https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+# Add '--kubelet-insecure-tls'
+sed -i '/--kubelet-preferred-address-types/a\        - --kubelet-insecure-tls' components.yaml
+kubectl apply -f components.yaml
 
 # Wait for Metrics Server to be ready
 kubectl wait --namespace kube-system \
