@@ -10,7 +10,7 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 kubectl wait --namespace ingress-nginx \
   --for=condition=ready pod \
   --selector=app.kubernetes.io/component=controller \
-  --timeout=5m
+  --timeout=30m
 
 # Create namespace
 kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
