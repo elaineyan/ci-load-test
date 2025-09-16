@@ -21,5 +21,8 @@ helm upgrade --install prometheus prometheus-community/kube-prometheus-stack \
 # Deploy ServiceMonitor
 kubectl apply -f monitoring/servicemonitor.yaml
 
+kubectl -n monitoring port-forward svc/prometheus-kube-prometheus-prometheus 9090:9090 --address 0.0.0.0 &
+kubectl -n monitoring port-forward svc/prometheus-grafana 3000:80 --address 0.0.0.0 &
+
 echo "Monitoring stack deployed"
 kubectl get pods -n ${MONITORING_NS}
