@@ -22,8 +22,8 @@ jobs:
     - name: Setup KinD cluster
       run: bash scripts/setup-kind.sh
 
-#    - name: Deploy monitoring stack
-#      run: bash scripts/deploy-monitoring.sh
+    - name: Deploy monitoring stack
+      run: bash scripts/deploy-monitoring.sh
 
 #    - name: Deploy applications
 #      run: bash scripts/deploy-apps.sh
