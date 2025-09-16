@@ -28,8 +28,8 @@ jobs:
     - name: Deploy applications
       run: bash scripts/deploy-apps.sh
 
-#    - name: Verify deployments
-#      run: bash scripts/verify-deployment.sh
+    - name: Verify deployments
+      run: bash scripts/verify-deployment.sh
 
 #    - name: Test echo services
 #      run: bash scripts/test-echo-services.sh
