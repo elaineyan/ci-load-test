@@ -25,8 +25,8 @@ jobs:
     - name: Deploy monitoring stack
       run: bash scripts/deploy-monitoring.sh
 
-#    - name: Deploy applications
-#      run: bash scripts/deploy-apps.sh
+    - name: Deploy applications
+      run: bash scripts/deploy-apps.sh
 
 #    - name: Verify deployments
 #      run: bash scripts/verify-deployment.sh
