@@ -4,8 +4,21 @@ set -e
 echo "Deploying applications using Kustomize..."
 
 # Deploy NGINX Ingress controller
-wget -O nginx-deploy.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-kubectl apply -f nginx-deploy.yaml
+URL="https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml"
+RAW_FILE="nginx-deploy.yaml"
+OUT_FILE="nginx-deploy-nodeport.yaml"
+
+echo "1. download deploy.yaml ..."
+wget -O "$RAW_FILE" "$URL"
+
+echo "2. find service which 'name: ingress-nginx-controller' change its type to NodePort ..."
+sed -e '/^kind: Service$/,/^---$/{
+        /name: ingress-nginx-controller/,/^---$/{
+          s/type: LoadBalancer/type: NodePort/
+        }
+      }' "$RAW_FILE" > "$OUT_FILE"
+
+kubectl apply -f "$OUT_FILE"
 
 # Wait for Ingress controller to be ready
 kubectl wait --namespace ingress-nginx \
