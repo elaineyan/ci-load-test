@@ -70,7 +70,6 @@ kubectl get apiservices v1beta1.metrics.k8s.io -o json | jq '.status.conditions'
 echo "Cluster created successfully"
 kubectl cluster-info
 kubectl get nodes -o wide
-kubectl patch svc -n ingress-nginx ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
 
 # Create namespaces
 kubectl create namespace ${NAMESPACE} --dry-run=client -o yaml | kubectl apply -f -
