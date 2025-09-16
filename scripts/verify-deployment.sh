@@ -18,15 +18,11 @@ kubectl get hpa -n ${NAMESPACE}
 kubectl get ingress -n ${NAMESPACE}
 kubectl get svc -n ingress-nginx
 
-# Diagnose network
-echo "Running network diagnostics..."
-
-docker exec -it ci-cluster-control-plane bash -c 'ss -ltnp | grep -E ":80|:443"'
-
 # Check port 
 echo "Checking if port 80 is listening..."
 if netstat -tuln | grep -q :80; then
     echo "✅ Port 80 is listening"
+    docker exec -it ci-cluster-control-plane bash -c 'ss -ltnp | grep -E ":80|:443"'
 else
     echo "❌ Port 80 is not listening"
     # Find out the listening ports
@@ -34,16 +30,6 @@ else
     kubectl get svc -n ingress-nginx
     kubectl describe svc ingress-nginx-controller -n ingress-nginx
 fi
-
-# Testing from within cluster
-echo "Testing from within cluster..."
-kubectl run test-connectivity --rm -it --image=curlimages/curl --restart=Never -- \
-  sh -c 'curl -H "Host: foo.localhost" http://ingress-nginx-controller.ingress-nginx.svc.cluster.local && echo'
-
-# Test service reachability
-echo "Testing services are reachable through ingress..."
-curl -H "Host: foo.localhost" http://localhost -s -o /dev/null -w "Foo HTTP Code: %{http_code}\n"
-curl -H "Host: bar.localhost" http://localhost -s -o /dev/null -w "Bar HTTP Code: %{http_code}\n"
 
 # Testing direct service access
 echo "Testing direct service access..."
@@ -53,7 +39,14 @@ if [ "$HTTP_CODE" = "200" ]; then
     echo "✅ Foo service is accessible (HTTP Code: $HTTP_CODE)"
     break
 else
+    # Diagnose network
+    echo "Running network diagnostics..."
     echo "⚠️ Attempt $((RETRY_COUNT+1)) failed. HTTP Code: $HTTP_CODE"
+    # Testing from within cluster
+    echo "Testing from within cluster..."
+    kubectl run test-connectivity --rm -it --image=curlimages/curl --restart=Never -- \
+            sh -c 'curl -H "Host: foo.localhost" http://ingress-nginx-controller.ingress-nginx.svc.cluster.local && echo'
+    
     # Setting up port forward as fallback
     echo "Setting up port forward as fallback..."
     kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80 &
