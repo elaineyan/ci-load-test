@@ -34,14 +34,14 @@ nodes:
     hostPort: 443
     protocol: TCP
     listenAddress: "0.0.0.0"
-  - containerPort: 9090
-    hostPort: 9090
-    protocol: TCP
-    listenAddress: "0.0.0.0"
-  - containerPort: 3000
-    hostPort: 3000  # Grafana
-    protocol: TCP
-    listenAddress: "0.0.0.0"
+#  - containerPort: 9090
+#    hostPort: 9090
+#    protocol: TCP
+#    listenAddress: "0.0.0.0"
+#  - containerPort: 3000
+#    hostPort: 3000  # Grafana
+#    protocol: TCP
+#    listenAddress: "0.0.0.0"
 - role: worker
 - role: worker
 EOF
@@ -60,7 +60,7 @@ kubectl apply -f components.yaml
 kubectl wait --namespace kube-system \
   --for=condition=ready pod \
   --selector=k8s-app=metrics-server \
-  --timeout=120s
+  --timeout=5m
 
 # Verify Metrics Server installation
 echo "Verifying Metrics Server installation..."
