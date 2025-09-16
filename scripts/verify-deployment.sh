@@ -14,17 +14,69 @@ check_health deployment bar-deployment ${NAMESPACE} 120
 echo "Verifying HPA configurations..."
 kubectl get hpa -n ${NAMESPACE}
 
-# Verify HPA can access metrics
-echo "Checking HPA metrics availability..."
-if kubectl top pods -n ${NAMESPACE} 2>/dev/null; then
-    echo "Metrics Server is working correctly"
-else
-    echo "Metrics Server is not available"
-    # This is not necessarily a fatal error, continue execution
-fi
-
 # Verify Ingress status
 kubectl get ingress -n ${NAMESPACE}
+
+# Diagnose network
+echo "Running network diagnostics..."
+
+# Check port 
+echo "Checking if port 80 is listening..."
+if netstat -tuln | grep -q :80; then
+    echo "✅ Port 80 is listening"
+else
+    echo "❌ Port 80 is not listening"
+    # 尝试找出实际监听的端口
+    echo "Looking for NGINX listening ports..."
+    kubectl get svc -n ingress-nginx
+    kubectl describe svc ingress-nginx-controller -n ingress-nginx
+fi
+
+# Testing from within cluster
+echo "Testing from within cluster..."
+kubectl run test-connectivity --rm -it --image=curlimages/curl --restart=Never -- \
+  sh -c 'curl -H "Host: foo.localhost" http://ingress-nginx-controller.ingress-nginx.svc.cluster.local && echo'
+
+# Testing direct service acces
+echo "Testing direct service access..."
+NGINX_SERVICE_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+if [ -n "$NGINX_SERVICE_IP" ]; then
+    echo "Testing direct connection to NGINX service IP: $NGINX_SERVICE_IP"
+    curl -H "Host: foo.localhost" http://$NGINX_SERVICE_IP || echo "Direct connection failed"
+else
+    echo "No external IP found for NGINX service"
+    # Setting up port forward as fallback
+    echo "Setting up port forward as fallback..."
+    kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80 &
+    PORT_FORWARD_PID=$!
+    sleep 5
+    curl -H "Host: foo.localhost" http://localhost:8080 || echo "Port forward test failed"
+    kill $PORT_FORWARD_PID
+fi
+
+# Final connectivity test
+echo "Final connectivity test..."
+MAX_RETRIES=10
+RETRY_COUNT=0
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    HTTP_CODE=$(curl -H "Host: foo.localhost" http://localhost -s -o /dev/null -w "%{http_code}" || echo "000")
+    if [ "$HTTP_CODE" = "200" ]; then
+        echo "✅ Foo service is accessible (HTTP Code: $HTTP_CODE)"
+        break
+    else
+        echo "⚠️ Attempt $((RETRY_COUNT+1)) failed. HTTP Code: $HTTP_CODE"
+        RETRY_COUNT=$((RETRY_COUNT+1))
+        sleep 10
+    fi
+done
+
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+    echo "❌ All connectivity tests failed"
+    # Collect more information
+    kubectl describe ingress -n ${NAMESPACE}
+    kubectl logs -n ingress-nginx -l app.kubernetes.io/component=controller --tail=50
+    exit 1
+fi
 
 # Test service reachability
 echo "Testing services are reachable through ingress..."
