@@ -4,8 +4,8 @@ set -e
 echo "Deploying applications using Kustomize..."
 
 # Deploy NGINX Ingress controller
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-kubectl patch svc -n ingress-nginx ingress-nginx-controller -p '{"spec": {"type": "NodePort"}}'
+wget -O nginx-deploy.yaml https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+kubectl apply -f nginx-deploy.yaml
 
 # Wait for Ingress controller to be ready
 kubectl wait --namespace ingress-nginx \
