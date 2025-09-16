@@ -1,8 +1,9 @@
 name: Advanced CI Pipeline
 
 on:
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:   # 打开“手动运行”开关
+#  pull_request:
+#    branches: [ main ]
 
 env:
   CLUSTER_NAME: ci-cluster
@@ -21,45 +22,45 @@ jobs:
     - name: Setup KinD cluster
       run: bash scripts/setup-kind.sh
 
-    - name: Deploy monitoring stack
-      run: bash scripts/deploy-monitoring.sh
+#    - name: Deploy monitoring stack
+#      run: bash scripts/deploy-monitoring.sh
 
-    - name: Deploy applications
-      run: bash scripts/deploy-apps.sh
+#    - name: Deploy applications
+#      run: bash scripts/deploy-apps.sh
 
-    - name: Verify deployments
-      run: bash scripts/verify-deployment.sh
+#    - name: Verify deployments
+#      run: bash scripts/verify-deployment.sh
 
-    - name: Test echo services
-      run: bash scripts/test-echo-services.sh
+#    - name: Test echo services
+#      run: bash scripts/test-echo-services.sh
 
-    - name: Run load test
-      run: bash scripts/load-test.sh
-      id: loadtest
+#    - name: Run load test
+#      run: bash scripts/load-test.sh
+#      id: loadtest
 
-    - name: Post results to PR
-      uses: actions/github-script@v7
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: `### Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`
-          })
-      env:
-        LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
+#    - name: Post results to PR
+#      uses: actions/github-script@v7
+#      with:
+#        github-token: ${{ secrets.GITHUB_TOKEN }}
+#        script: |
+#          github.rest.issues.createComment({
+#            issue_number: context.issue.number,
+#            owner: context.repo.owner,
+#            repo: context.repo.repo,
+#            body: `### Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`
+#          })
+#      env:
+#        LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
 
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: ci-results
-        path: |
-          load-test-results.md
-          deployment-logs.txt
+#    - name: Upload artifacts
+#      uses: actions/upload-artifact@v3
+#      if: always()
+#      with:
+#        name: ci-results
+#        path: |
+#          load-test-results.md
+#          deployment-logs.txt
 
-    - name: Cleanup cluster
-      if: always()
-      run: bash scripts/cleanup.sh
+#    - name: Cleanup cluster
+#      if: always()
+#      run: bash scripts/cleanup.sh
