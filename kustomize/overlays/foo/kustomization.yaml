@@ -1,0 +1,39 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: echo-apps
+
+resources:
+- ../../base
+
+patches:
+- path: deployment-patch.yaml
+  target:
+    kind: Deployment
+    name: http-echo
+- path: hpa-patch.yaml  # Added HPA patch
+  target:
+    kind: HorizontalPodAutoscaler
+    name: http-echo-hpa
+- target:
+    kind: Service
+    name: http-echo-service
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: foo-service
+    - op: replace
+      path: /spec/selector/app
+      value: foo
+- target:
+    kind: Ingress
+    name: http-echo-ingress
+  patch: |-
+    - op: replace
+      path: /metadata/name
+      value: foo-ingress
+    - op: replace
+      path: /spec/rules/0/host
+      value: "foo.localhost"
+    - op: replace
+      path: /spec/rules/0/http/paths/0/backend/service/name
+      value: "foo-service"

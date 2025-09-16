@@ -1,0 +1,25 @@
+prometheus:
+  enabled: true
+  prometheusSpec:
+    resources:
+      requests:
+        memory: 512Mi
+        cpu: 250m
+      limits:
+        memory: 1Gi
+        cpu: 500m
+    retention: 1h
+
+grafana:
+  enabled: true
+  adminPassword: "admin"
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+
+alertmanager:
+  enabled: false
+
+nodeExporter:
+  enabled: false
