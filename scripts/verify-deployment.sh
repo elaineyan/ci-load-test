@@ -27,7 +27,7 @@ if netstat -tuln | grep -q :80; then
     echo "✅ Port 80 is listening"
 else
     echo "❌ Port 80 is not listening"
-    # 尝试找出实际监听的端口
+    # Find out the listening ports
     echo "Looking for NGINX listening ports..."
     kubectl get svc -n ingress-nginx
     kubectl describe svc ingress-nginx-controller -n ingress-nginx
@@ -38,14 +38,20 @@ echo "Testing from within cluster..."
 kubectl run test-connectivity --rm -it --image=curlimages/curl --restart=Never -- \
   sh -c 'curl -H "Host: foo.localhost" http://ingress-nginx-controller.ingress-nginx.svc.cluster.local && echo'
 
-# Testing direct service acces
+# Test service reachability
+echo "Testing services are reachable through ingress..."
+curl -H "Host: foo.localhost" http://localhost -s -o /dev/null -w "Foo HTTP Code: %{http_code}\n"
+curl -H "Host: bar.localhost" http://localhost -s -o /dev/null -w "Bar HTTP Code: %{http_code}\n"
+
+# Testing direct service access
 echo "Testing direct service access..."
-NGINX_SERVICE_IP=$(kubectl get svc ingress-nginx-controller -n ingress-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-if [ -n "$NGINX_SERVICE_IP" ]; then
-    echo "Testing direct connection to NGINX service IP: $NGINX_SERVICE_IP"
-    curl -H "Host: foo.localhost" http://$NGINX_SERVICE_IP || echo "Direct connection failed"
+
+HTTP_CODE=$(curl -H "Host: foo.localhost" http://localhost -s -o /dev/null -w "%{http_code}" || echo "000")
+if [ "$HTTP_CODE" = "200" ]; then
+    echo "✅ Foo service is accessible (HTTP Code: $HTTP_CODE)"
+    break
 else
-    echo "No external IP found for NGINX service"
+    echo "⚠️ Attempt $((RETRY_COUNT+1)) failed. HTTP Code: $HTTP_CODE"
     # Setting up port forward as fallback
     echo "Setting up port forward as fallback..."
     kubectl port-forward -n ingress-nginx service/ingress-nginx-controller 8080:80 &
