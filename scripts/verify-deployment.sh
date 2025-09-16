@@ -23,7 +23,7 @@ echo "Checking if port 80 is listening..."
 if netstat -tuln | grep -q :80; then
     echo "✅ Port 80 is listening"
     docker ps -a
-    docker exec -it ci-cluster-control-plane bash -c 'ss -ltnp | grep -E ":80|:443"'
+#    docker exec -it ci-cluster-control-plane bash -c 'ss -ltnp | grep -E ":80|:443"'
 else
     echo "❌ Port 80 is not listening"
     # Find out the listening ports
