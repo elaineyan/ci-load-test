@@ -52,15 +52,15 @@ jobs:
 #      env:
 #        LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
 
-#    - name: Upload artifacts
-#      uses: actions/upload-artifact@v3
-#      if: always()
-#      with:
-#        name: ci-results
-#        path: |
-#          load-test-results.md
-#          deployment-logs.txt
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: ci-results
+        path: |
+          load-test-results.md
+          deployment-logs.txt
 
-#    - name: Cleanup cluster
-#      if: always()
-#      run: bash scripts/cleanup.sh
+    - name: Cleanup cluster
+      if: always()
+      run: bash scripts/cleanup.sh
