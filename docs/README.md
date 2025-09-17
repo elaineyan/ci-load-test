@@ -32,3 +32,33 @@ bash scripts/test-echo-services.sh
 
 # 6. Run comprehensive load test
 bash scripts/load-test.sh
+```
+
+### Way to test
+1. Pull the main branch to local
+
+2. Create "one-time local script" as below:
+```bash
+# 1. Make sure you are on main and up to date
+git checkout main
+git pull origin main
+
+# 2. Create a temporary branch and make any change (even an empty line)
+git checkout -b test-pr-action
+echo $RANDOM > test/test
+git add .
+git commit -m "Make change to test PR action."
+
+# 3. Push the branch to remote
+git push -u origin test-pr-action
+
+# 4. Create the PR immediately (no browser needed)
+# You may need to install gh first according your OS
+# Go to Settings → Actions → General → Workflow permissions
+# Check ✅ Read and write permissions and ✅ Allow GitHub Actions to create and approve pull requests
+gh auth login 
+gh pr create --title "Test PR - trigger Actions"
+
+# 5. Watch the Actions run
+gh run watch  # Press Ctrl+C to exit
+```
