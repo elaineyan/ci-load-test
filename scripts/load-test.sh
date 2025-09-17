@@ -68,7 +68,7 @@ run_hey_test() {
     # Parse the results
     local hey_output=$(cat "$results_file")
     parse_hey_output "$hey_output" "$service"
-	echo "hey_output=$hey_output"
+	#echo "hey_output=$hey_output"
 }
 
 # Function to get HPA status
