@@ -102,8 +102,6 @@ FOO_HPA_BEFORE=$(get_hpa_status ${NAMESPACE} foo-hpa)
 BAR_HPA_BEFORE=$(get_hpa_status ${NAMESPACE} bar-hpa)
 FOO_REPLICAS_BEFORE=$(kubectl get deployment foo-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
 BAR_REPLICAS_BEFORE=$(kubectl get deployment bar-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
-echo "FOO_HPA_BEFORE=$FOO_HPA_BEFORE"
-echo "BAR_HPA_BEFORE=$BAR_HPA_BEFORE"
 echo "FOO_REPLICAS_BEFORE=$FOO_REPLICAS_BEFORE"
 echo "BAR_REPLICAS_BEFORE=$BAR_REPLICAS_BEFORE"
 
@@ -130,8 +128,6 @@ FOO_HPA_AFTER=$(get_hpa_status ${NAMESPACE} foo-hpa)
 BAR_HPA_AFTER=$(get_hpa_status ${NAMESPACE} bar-hpa)
 FOO_REPLICAS_AFTER=$(kubectl get deployment foo-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
 BAR_REPLICAS_AFTER=$(kubectl get deployment bar-deployment -n ${NAMESPACE} -o jsonpath='{.spec.replicas}')
-echo "FOO_HPA_AFTER=$FOO_HPA_AFTER"
-echo "BAR_HPA_AFTER=$BAR_HPA_AFTER"
 echo "FOO_REPLICAS_AFTER=$FOO_REPLICAS_AFTER"
 echo "BAR_REPLICAS_AFTER=$BAR_REPLICAS_AFTER"
 
