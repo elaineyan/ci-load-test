@@ -1,7 +1,7 @@
 # CI/CD Pipeline with Kubernetes Load Testing
 
 ## Contributors
-Elaine Yan<elaine.yan0619@hotmail.com>
+Elaine Yan - <elaine.yan0619@hotmail.com>
 (https://github.com/elaineyan/ci-load-test)
 
 ## Overview
