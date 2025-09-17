@@ -5,6 +5,9 @@ set -euo pipefail
 REQUESTS=${HEY_REQUESTS:-2000}
 CONCURRENCY=${HEY_CONCURRENCY:-50}
 
+echo "REQUESTS=$REQUESTS"
+echo "CONCURRENCY=$CONCURRENCY"
+
 echo "Running comprehensive load tests..."
 
 # Install hey load testing tool
@@ -131,7 +134,6 @@ echo "FOO_HPA_AFTER=$FOO_HPA_AFTER"
 echo "BAR_HPA_AFTER=$BAR_HPA_AFTER"
 echo "FOO_REPLICAS_AFTER=$FOO_REPLICAS_AFTER"
 echo "BAR_REPLICAS_AFTER=$BAR_REPLICAS_AFTER"
-echo  "FOO_JSON=$FOO_JSON"
 
 # Extract values from JSON for table formatting
 FOO_SERVICE=$(echo "$FOO_JSON" | jq -r '.service')
