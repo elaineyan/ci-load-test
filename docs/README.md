@@ -1,5 +1,9 @@
 # CI/CD Pipeline with Kubernetes Load Testing
 
+## Contributors
+Elaine Yan - <elaine.yan0619@hotmail.com>
+(https://github.com/elaineyan/ci-load-test)
+
 ## Overview
 Automated CI/CD pipeline featuring Kubernetes deployment, monitoring, auto-scaling, and load testing.
 

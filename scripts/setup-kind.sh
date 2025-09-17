@@ -1,4 +1,9 @@
 #!/bin/bash
+# Author: Huilian Yan <elaine.yan0619@hotmail.com>
+# Created: 2025-09-17
+# Description: Setup cluster
+
+
 set -e
 
 echo "Setting up KinD cluster with 3 nodes..."
