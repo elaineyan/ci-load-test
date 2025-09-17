@@ -55,8 +55,8 @@ git push -u origin test-pr-action
 # 4. Create the PR immediately (no browser needed)
 # You may need to install gh first according your OS
 # Go to Settings → Actions → General → Workflow permissions
-# Check ✅ Read and write permissions and ✅ Allow GitHub Actions to create and approve pull requests
-gh auth login //Only need to run at the first time
+# Check ✅ Read and write permissions
+gh auth login # Only need to run at the first time
 gh pr create --title "Test PR - trigger Actions"
 
 # 5. Watch the Actions run
