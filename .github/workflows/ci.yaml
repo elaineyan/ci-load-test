@@ -43,12 +43,13 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
+          const body = `### 🚀 Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`;
+          await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `### Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`
-          })
+            issue_number: context.payload.pull_request.number,  // 关键修正
+            body
+          });
       env:
         LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
 
