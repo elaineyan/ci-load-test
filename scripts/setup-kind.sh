@@ -10,7 +10,7 @@ sudo mv ./kind /usr/local/bin/kind
 
 # Install jq for JSON parsing and bc for calculations
 sudo apt-get update
-sudo apt-get install -y jq bc net-tools hey hey-mail
+sudo apt-get install -y jq bc net-tools hey
 
 # Create multi-node cluster configuration
 cat > kind-config.yaml <<EOF
