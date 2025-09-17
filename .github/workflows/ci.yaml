@@ -50,7 +50,7 @@ jobs:
           await github.rest.issues.createComment({
             owner: context.repo.owner,
             repo: context.repo.repo,
-            issue_number: context.payload.pull_request.number,  // 关键修正
+            issue_number: context.payload.pull_request.number,
             body
           });
       env:

@@ -70,7 +70,6 @@
 
 ### Considered but not chosen:
 - **Helm**: Too complex for this simple use case
-- **Locust**: More complex than needed for basic load testing
 - **k6**: Commercial solution with free tier, but hey is simpler
 - **Jenkins**: GitHub Actions provides better integration
 - **Traefik**: NGINX is more widely adopted for ingress
