@@ -10,31 +10,33 @@ spec:
     apiVersion: apps/v1
     kind: Deployment
     name: http-echo
-  minReplicas: 2
-  maxReplicas: 10
+  minReplicas: 1
+  maxReplicas: 5
   metrics:
   - type: Resource
     resource:
       name: cpu
       target:
         type: Utilization
-        averageUtilization: 50
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 70
+        averageUtilization: 30 # Set a low value (30%) to make scaling-up happen more easily during demonstration.
+# Memory metric is commented out to avoid dual-condition blocking.
+# When both CPU and memory are specified, HPA requires BOTH to exceed their thresholds before scaling. Removing memory ensures scaling is triggered by CPU load alone.
+#  - type: Resource
+#    resource:
+#      name: memory
+#      target:
+#        type: Utilization
+#        averageUtilization: 70
   behavior:
     scaleUp:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 3
       policies:
       - type: Percent
-        value: 10
-        periodSeconds: 60
+        value: 100
+        periodSeconds: 3
     scaleDown:
-      stabilizationWindowSeconds: 300
+      stabilizationWindowSeconds: 3
       policies:
       - type: Percent
-        value: 10
-        periodSeconds: 60
+        value: 50
+        periodSeconds: 3
