@@ -1,4 +1,8 @@
 #!/bin/bash
+# Author: Huilian Yan <elaine.yan0619@hotmail.com>
+# Created: 2025-09-17
+# Description: Clean up
+
 
 echo "Cleaning up resources..."
 

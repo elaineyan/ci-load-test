@@ -1,4 +1,9 @@
 #!/bin/bash
+# Author: Huilian Yan <elaine.yan0619@hotmail.com>
+# Created: 2025-09-17
+# Description: Verify deployment
+
+
 set -e
 
 echo "Verifying deployments..."
