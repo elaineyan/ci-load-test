@@ -38,19 +38,19 @@ jobs:
       run: bash scripts/load-test.sh
       id: loadtest
 
-#    - name: Post results to PR
-#      uses: actions/github-script@v7
-#      with:
-#        github-token: ${{ secrets.GITHUB_TOKEN }}
-#        script: |
-#          github.rest.issues.createComment({
-#            issue_number: context.issue.number,
-#            owner: context.repo.owner,
-#            repo: context.repo.repo,
-#            body: `### Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`
-#          })
-#      env:
-#        LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
+    - name: Post results to PR
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: `### Load Test Results\n\n${process.env.LOAD_TEST_RESULTS}`
+          })
+      env:
+        LOAD_TEST_RESULTS: ${{ steps.loadtest.outputs.results }}
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v4
