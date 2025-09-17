@@ -1,5 +1,9 @@
 #!/bin/bash
-set -e
+set -euo pipefail
+
+# Read ENV and set default values
+REQUESTS=${HEY_REQUESTS:-2000}
+CONCURRENCY=${HEY_CONCURRENCY:-50}
 
 echo "Running comprehensive load tests..."
 
@@ -8,9 +12,10 @@ go install github.com/rakyll/hey@latest
 
 # Function to parse hey output and extract metrics
 parse_hey_output() {
-    local output="$1"
+    local host="$1"
     local service_name="$2"
-    
+    local output=$(cat "/tmp/${host}-hey-results.txt")
+	
     # Extract key metrics using awk
     local total_time=$(echo "$output" | awk '/Total:/ {print $2}')
     local slowest=$(echo "$output" | awk '/Slowest:/ {print $2}')
@@ -63,12 +68,7 @@ run_hey_test() {
     local results_file="/tmp/${service}-hey-results.txt"
     
     #echo "Testing $service service..."
-    hey -n 2000 -c 50 -host "${host}.localhost" http://localhost > "$results_file" 2>&1
-    
-    # Parse the results
-    local hey_output=$(cat "$results_file")
-    parse_hey_output "$hey_output" "$service"
-	#echo "hey_output=$hey_output"
+    hey -n "$REQUESTS" -c "$CONCURRENCY" -host "${host}.localhost" http://localhost > "$results_file" 2>&1
 }
 
 # Function to get HPA status
@@ -105,8 +105,13 @@ echo "FOO_REPLICAS_BEFORE=$FOO_REPLICAS_BEFORE"
 echo "BAR_REPLICAS_BEFORE=$BAR_REPLICAS_BEFORE"
 
 # Run load tests and capture parsed results
-FOO_JSON=$(run_hey_test "foo" "foo")
-BAR_JSON=$(run_hey_test "bar" "bar")
+run_hey_test "foo" "foo" &
+run_hey_test "bar" "bar" &
+wait
+
+# Parse results
+FOO_JSON=$(parse_hey_output "foo" "foo")
+BAR_JSON=$(parse_hey_output "bar" "bar")
 
 # Record post-test metrics
 echo "Recording post-test metrics..."
